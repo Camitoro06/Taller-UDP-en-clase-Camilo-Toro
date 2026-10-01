@@ -1,0 +1,22 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Java
+*.class
+out/
+
+# VS Code
+.vscode/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
