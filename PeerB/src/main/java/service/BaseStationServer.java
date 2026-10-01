@@ -66,13 +66,15 @@ public class BaseStationServer {
      * @throws IOException Si ocurre un error de red al responder.
      */
     public void handlePacket(DatagramSocket socket, DatagramPacket packet) throws IOException {
-        // TODO Paso 2.1: Convertir los bytes del paquete recibido a un String usando UTF-8.
-        // ¡Importante!: Usar packet.getOffset() y packet.getLength() para leer únicamente
-        // los bytes válidos del paquete y no la totalidad del buffer:
-        // String message = new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8);
 
-        // TODO Paso 2.2: Procesar el mensaje con el TelemetryProcessor para obtener la respuesta:
-        // String response = this.processor.process(message);
+        String message = new String(
+                packet.getData(),
+                packet.getOffset(),
+                packet.getLength(),
+                StandardCharsets.UTF_8
+        );
+
+        String response = this.processor.process(message);
 
         // TODO Paso 2.3: Convertir la respuesta a bytes (UTF-8) y construir el DatagramPacket de respuesta
         // dirigido al remitente (packet.getAddress() y packet.getPort()).
