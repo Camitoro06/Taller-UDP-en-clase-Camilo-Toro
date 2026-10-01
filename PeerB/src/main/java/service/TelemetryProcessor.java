@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Procesador de mensajes del protocolo de telemetría IoT sobre UDP.
- * 
+ *
  * Formato de mensajes recibidos:
  *   - Registro de telemetría: "DEVICE_ID;SENSOR_TYPE;VALUE" (ej. "sensor-01;TEMP;25.5")
  *   - Consulta de estado:      "STATUS;DEVICE_ID" (ej. "STATUS;sensor-01")
@@ -18,13 +18,15 @@ public class TelemetryProcessor {
     /**
      * Procesa un mensaje de texto recibido por UDP y devuelve la respuesta
      * correspondiente según las reglas del protocolo de telemetría.
-     * 
+     *
      * @param rawMessage Mensaje en texto plano recibido en el datagrama UDP.
      * @return Respuesta que será enviada de regreso al cliente emisor.
      */
     public String process(String rawMessage) {
-        // TODO Paso 1.1: Validar que el mensaje no sea nulo ni esté vacío (usar trim()).
-        // Si no es válido, retornar "ERROR;INVALID_FORMAT".
+
+        if (rawMessage == null || rawMessage.trim().isEmpty()) {
+            return "ERROR;INVALID_FORMAT";
+        }
 
         // TODO Paso 1.2: Separar el mensaje usando el delimitador ";".
         // Si el arreglo resultante está vacío, retornar "ERROR;INVALID_FORMAT".
@@ -60,7 +62,7 @@ public class TelemetryProcessor {
         // - Cualquier otro sensorType:
         //     retornar "ERROR;UNKNOWN_SENSOR_TYPE"
 
-        return "ERROR;NOT_IMPLEMENTED"; // Reemplazar con su implementación
+        return "ERROR;NOT_IMPLEMENTED";
     }
 
     public Map<String, TelemetryData> getLastReadings() {
