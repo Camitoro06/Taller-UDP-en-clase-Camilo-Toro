@@ -37,19 +37,24 @@ public class BaseStationServer {
 
         this.listenerThread = new Thread(() -> {
             byte[] buffer = new byte[1024];
+
             while (running && !socket.isClosed()) {
                 try {
                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                     socket.receive(packet);
                     handlePacket(socket, packet);
+
                 } catch (SocketException e) {
                     // Socket cerrado intencionalmente al detener el servidor
                     if (!running) {
                         break;
                     }
+
                 } catch (IOException e) {
                     if (running) {
-                        System.err.println("Error procesando datagrama: " + e.getMessage());
+                        System.err.println(
+                                "Error procesando datagrama: " + e.getMessage()
+                        );
                     }
                 }
             }
@@ -60,12 +65,13 @@ public class BaseStationServer {
 
     /**
      * Procesa un datagrama UDP recibido y envía la respuesta al remitente original.
-     * 
+     *
      * @param socket Socket UDP activo.
      * @param packet Paquete recibido con datos, IP y puerto del emisor.
      * @throws IOException Si ocurre un error de red al responder.
      */
-    public void handlePacket(DatagramSocket socket, DatagramPacket packet) throws IOException {
+    public void handlePacket(DatagramSocket socket, DatagramPacket packet)
+            throws IOException {
 
         String message = new String(
                 packet.getData(),
@@ -76,10 +82,16 @@ public class BaseStationServer {
 
         String response = this.processor.process(message);
 
-        // TODO Paso 2.3: Convertir la respuesta a bytes (UTF-8) y construir el DatagramPacket de respuesta
-        // dirigido al remitente (packet.getAddress() y packet.getPort()).
+        byte[] responseBytes = response.getBytes(StandardCharsets.UTF_8);
 
-        // TODO Paso 2.4: Enviar el paquete de respuesta a través del socket usando socket.send(...).
+        DatagramPacket responsePacket = new DatagramPacket(
+                responseBytes,
+                responseBytes.length,
+                packet.getAddress(),
+                packet.getPort()
+        );
+
+        socket.send(responsePacket);
     }
 
     /**
@@ -87,9 +99,11 @@ public class BaseStationServer {
      */
     public synchronized void stop() {
         this.running = false;
+
         if (this.socket != null && !this.socket.isClosed()) {
             this.socket.close();
         }
+
         if (this.listenerThread != null) {
             try {
                 this.listenerThread.join(1000);
@@ -108,7 +122,9 @@ public class BaseStationServer {
      * (útil si se inicializó con puerto 0 para pruebas).
      */
     public int getPort() {
-        return (socket != null && !socket.isClosed()) ? socket.getLocalPort() : port;
+        return (socket != null && !socket.isClosed())
+                ? socket.getLocalPort()
+                : port;
     }
 
     public TelemetryProcessor getProcessor() {
